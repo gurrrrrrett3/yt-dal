@@ -19,20 +19,25 @@ app.get("/", (req, res) => {
 });
 
 app.get("/redirect", (req, res) => {
-    const { input, ext, i } = req.query;
-    if (!input) {
-        res.redirect("/");
-        return;
-    }
+  const { input, ext, i } = req.query;
+  if (!input) {
+    res.redirect("/");
+    return;
+  }
 
+  try {
     const id = ytdl.getVideoID(input as string);
     if (!id) {
-        res.redirect("/");
-        return;
+      res.redirect("/");
+      return;
     }
 
     res.redirect(`/${id}.${ext}` + (i == "true" ? "?i=true" : ""));
-})
+  } catch (err) {
+    res.redirect("/");
+    return;
+  }
+});
 
 app.get("/:type/:id.:ext", (req, res) => {
   const { type, id, ext } = req.params;
@@ -90,9 +95,9 @@ app.get("/:id.:ext", async (req, res) => {
 
       res.setHeader("Content-Type", "video/" + ext);
 
-        if (i == "true") {
-            res.setHeader("Content-Disposition", `attachment; filename="${title}.${ext}"`);
-        }
+      if (i == "true") {
+        res.setHeader("Content-Disposition", `attachment; filename="${title}.${ext}"`);
+      }
 
       stream.pipe(res, { end: true });
     } catch (err) {
@@ -109,10 +114,10 @@ app.get("/:id.:ext", async (req, res) => {
     }
 
     const video = await ytdl.getBasicInfo(id).catch((err) => {
-        res.status(400).json({
-            error: "Invalid video ID",
-        });
-        return;
+      res.status(400).json({
+        error: "Invalid video ID",
+      });
+      return;
     });
 
     if (!video) return;
@@ -165,9 +170,9 @@ async function process(
   });
 
   res.setHeader("Content-Type", "audio/" + ext);
-    if (options?.download) {
-        res.setHeader("Content-Disposition", `attachment; filename="${options.fileName || res.req.path}.${ext}"`);
-    }
+  if (options?.download) {
+    res.setHeader("Content-Disposition", `attachment; filename="${options.fileName || res.req.path}.${ext}"`);
+  }
   ffmpeg.pipe(res, { end: true });
 }
 
