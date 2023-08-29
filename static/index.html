@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>yt-dal | Direct Audio Link</title>
+  </head>
+  <body>
+    <h1 data-typewriter="0">yt-dal</h1>
+    <p data-typewriter="1">Direct Audio Link</p>
+
+    <form>
+        <input
+            type="text"
+            name="id"
+            id="id"
+            placeholder="Enter video ID"
+            required
+        />
+
+       <div class="btngroup">
+        <button id="a/mp3">MP3</button>
+        <button id="a/ogg">OGG</button>
+        <button id="a/wav">WAV</button>
+        <button id="a/flac">FLAC</button>
+
+        <button id="v/mp4">MP4</button>
+        <button id="v/webm">WEBM</button>
+       </div>
+
+        
+    </form>
+
+  </body>
+
+  <script>
+    let currentCharCount = 0;
+    let delay = 75;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const typewriter = (element, startDelay) => {
+        const textArray = element.innerHTML.split("");
+        element.innerHTML = "";
+
+        setTimeout(() => {
+          textArray.forEach((letter, i) => {
+            setTimeout(() => (element.innerHTML += letter), delay * i);
+          });
+        }, startDelay);
+      };
+
+      document.querySelectorAll("[data-typewriter]").forEach((element) => {
+        const elementIndex = element.getAttribute("data-typewriter");
+        const length = element.innerHTML.length;
+        typewriter(element, delay * currentCharCount);
+        currentCharCount += length;
+      });
+
+        document.querySelector("form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            const element = e.srcElement
+            const [type, ext] = e.submitter.id.split("/")
+            const id = element.querySelector("#id").value
+            window.location.href = `/${type}/${id}.${ext}`
+        });
+    });
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Courier New", Courier, monospace;
+
+    }
+
+    body {
+      background-color: black;
+      color: white;
+      font-size: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      outline: none;
+      font-size: 1.2rem;
+      background-color: black;
+        color: white;
+    }
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    button {
+      padding: 0.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      outline: none;
+      font-size: 1.2rem;
+      background-color: black;
+        color: white;
+    }
+
+    button:hover {
+      cursor: pointer;
+      background-color: white;
+      color: black;
+    }
+
+    button:active {
+      background-color: black;
+      color: white;
+    }
+
+    button:focus {
+      outline: none;
+    }
+
+    .btngroup {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</html>
