@@ -18,20 +18,25 @@ app.get("/", (req, res) => {
     res.sendFile(path.resolve("static/index.html"));
 });
 
-app.get("/:type/:id.:ext", async (req, res) => {
-  const { type, id, ext } = req.params;
+app.get("/:type/:id.:ext", (req, res) => {
+    const { type, id, ext } = req.params;
+    res.redirect(`/${id}.${ext}`);
+});
 
-  if (type !== "v" && type !== "a") {
-    return res.status(400).json({
-      error: "Invalid type. Valid types are v (video) and a (audio)",
-    });
-  }
+app.get("/:id.:ext", async (req, res) => {
+  const {  id, ext } = req.params;
+
 
   if (!ytdl.validateID(id)) {
     return res.status(400).json({
       error: "Invalid video ID",
     });
   }
+
+  const audioExt = ["mp3", "wav", "ogg", "flac"];
+  const videoExt = ["mp4", "webm"];
+
+  const type = audioExt.includes(ext) ? "a" : videoExt.includes(ext) ? "v" : null;
 
   if (type === "v") {
     const validExt = ["mp4", "webm"];
