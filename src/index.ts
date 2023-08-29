@@ -14,6 +14,10 @@ if (!ffmpegPath) {
   throw new Error("ffmpeg not found");
 }
 
+if (!fs.existsSync("temp")) {
+  fs.mkdirSync("temp");
+}
+
 app.get("/", (req, res) => {
   res.sendFile(path.resolve("static/index.html"));
 });
@@ -47,6 +51,8 @@ app.get("/:type/:id.:ext", (req, res) => {
 app.get("/:id.:ext", async (req, res) => {
   const { id, ext } = req.params;
   const { i } = req.query;
+
+  const useDiscordPatch = req.headers["user-agent"]?.includes("Discordbot") || false;
 
   if (!ytdl.validateID(id)) {
     return res.status(400).json({
@@ -97,6 +103,25 @@ app.get("/:id.:ext", async (req, res) => {
 
       if (i == "true") {
         res.setHeader("Content-Disposition", `attachment; filename="${title}.${ext}"`);
+      }
+
+      if (useDiscordPatch) {
+        // discord's player is broken and doesn't support streams, so we have to download full file before sending it
+        const tempPath = path.resolve(`temp/${title}.${ext}`);
+        if (!fs.existsSync(tempPath)) {
+          stream.pipe(fs.createWriteStream(tempPath));
+        } else {
+          stream.emit("end");
+          stream.destroy();
+        }
+
+        stream.on("end", () => {
+          res.sendFile(tempPath);
+
+          setTimeout(() => {
+            if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+          }, 1000 * 60 * 5);
+        });
       }
 
       stream.pipe(res, { end: true });
