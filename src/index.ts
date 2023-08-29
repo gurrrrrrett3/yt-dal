@@ -4,6 +4,9 @@ import Ffmpeg from "fluent-ffmpeg";
 import ytdl from "ytdl-core";
 import Stream from "stream";
 import path from "path";
+import fs from "fs";
+
+const port = fs.readFileSync("port.txt", "utf-8") || "3000"
 
 const app = express();
 
@@ -102,6 +105,6 @@ async function process(
   ffmpeg.pipe(res, { end: true });
 }
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+app.listen(parseInt(port), () => {
+  console.log("Server is running on port " + port);
 });
