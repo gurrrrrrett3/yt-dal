@@ -19,13 +19,12 @@
         />
 
        <div class="btngroup">
-        <button id="a/mp3">MP3</button>
-        <button id="a/ogg">OGG</button>
-        <button id="a/wav">WAV</button>
-        <button id="a/flac">FLAC</button>
-
-        <button id="v/mp4">MP4</button>
-        <button id="v/webm">WEBM</button>
+        <button id="mp3">MP3</button>
+        <button id="ogg">OGG</button>
+        <button id="wav">WAV</button>
+        <button id="flac">FLAC</button>
+        <button id="mp4">MP4</button>
+        <button id="webm">WEBM</button>
        </div>
 
         
@@ -59,9 +58,9 @@
         document.querySelector("form").addEventListener("submit", (e) => {
             e.preventDefault();
             const element = e.srcElement
-            const [type, ext] = e.submitter.id.split("/")
+            const ext = e.submitter.id
             const id = element.querySelector("#id").value
-            window.location.href = `/${type}/${id}.${ext}`
+            window.location.href = `/${id}.${ext}`
         });
     });
   </script>
