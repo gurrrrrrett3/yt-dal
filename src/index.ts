@@ -6,7 +6,7 @@ import Stream from "stream";
 import path from "path";
 import fs from "fs";
 
-const port = fs.readFileSync("port.txt", "utf-8") || "3000"
+const port = fs.readFileSync("port.txt", "utf-8") || "3000";
 
 const app = express();
 
@@ -15,17 +15,16 @@ if (!ffmpegPath) {
 }
 
 app.get("/", (req, res) => {
-    res.sendFile(path.resolve("static/index.html"));
+  res.sendFile(path.resolve("static/index.html"));
 });
 
 app.get("/:type/:id.:ext", (req, res) => {
-    const { type, id, ext } = req.params;
-    res.redirect(`/${id}.${ext}`);
+  const { type, id, ext } = req.params;
+  res.redirect(`/${id}.${ext}`);
 });
 
 app.get("/:id.:ext", async (req, res) => {
-  const {  id, ext } = req.params;
-
+  const { id, ext } = req.params;
 
   if (!ytdl.validateID(id)) {
     return res.status(400).json({
@@ -48,7 +47,7 @@ app.get("/:id.:ext", async (req, res) => {
 
     const video = await ytdl.getBasicInfo(id);
 
-    video.formats
+    const formats = video.formats
       .sort((a, b) => {
         return (b.bitrate || 0) - (a.bitrate || 0);
       })
@@ -59,9 +58,10 @@ app.get("/:id.:ext", async (req, res) => {
     const stream = ytdl(id, {
       quality: "highestvideo",
       filter: "videoandaudio",
+      format: formats[0] || undefined,
     });
 
-    res.setHeader("Content-Type", "video/mp4");
+    res.setHeader("Content-Type", "video/" + ext);
     stream.pipe(res, { end: true });
   } else {
     const validExt = ["mp3", "wav", "ogg", "flac"];
@@ -105,7 +105,7 @@ async function process(
     console.log("Processing finished successfully");
   });
 
-  res.setHeader("Content-Type", "audio/mpeg");
+  res.setHeader("Content-Type", "audio/" + ext);
 
   ffmpeg.pipe(res, { end: true });
 }

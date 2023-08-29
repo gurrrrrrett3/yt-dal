@@ -10,26 +10,17 @@
     <p data-typewriter="1">Direct Audio Link</p>
 
     <form>
-        <input
-            type="text"
-            name="id"
-            id="id"
-            placeholder="Enter video ID"
-            required
-        />
+      <input type="text" name="id" id="id" placeholder="Enter video ID" required />
 
-       <div class="btngroup">
+      <div class="btngroup">
         <button id="mp3">MP3</button>
         <button id="ogg">OGG</button>
         <button id="wav">WAV</button>
         <button id="flac">FLAC</button>
         <button id="mp4">MP4</button>
         <button id="webm">WEBM</button>
-       </div>
-
-        
+      </div>
     </form>
-
   </body>
 
   <script>
@@ -55,13 +46,13 @@
         currentCharCount += length;
       });
 
-        document.querySelector("form").addEventListener("submit", (e) => {
-            e.preventDefault();
-            const element = e.srcElement
-            const ext = e.submitter.id
-            const id = element.querySelector("#id").value
-            window.location.href = `/${id}.${ext}`
-        });
+      document.querySelector("form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const element = e.srcElement;
+        const ext = e.submitter.id;
+        const id = element.querySelector("#id").value;
+        window.location.href = `/${id}.${ext}`;
+      });
     });
   </script>
 
@@ -71,7 +62,6 @@
       padding: 0;
       box-sizing: border-box;
       font-family: "Courier New", Courier, monospace;
-
     }
 
     body {
@@ -111,7 +101,7 @@
       outline: none;
       font-size: 1.2rem;
       background-color: black;
-        color: white;
+      color: white;
     }
 
     input[type="radio"] {
@@ -125,7 +115,7 @@
       outline: none;
       font-size: 1.2rem;
       background-color: black;
-        color: white;
+      color: white;
     }
 
     button:hover {
