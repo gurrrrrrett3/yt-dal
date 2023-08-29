@@ -59,7 +59,7 @@ app.get("/:type/:id.:ext", async (req, res) => {
     res.setHeader("Content-Type", "video/mp4");
     stream.pipe(res, { end: true });
   } else {
-    const validExt = ["mp3", "wav", "ogg"];
+    const validExt = ["mp3", "wav", "ogg", "flac"];
     if (!validExt.includes(ext)) {
       return res.status(400).json({
         error: `Invalid extension. Valid extensions are ${validExt.join(", ")}`,
