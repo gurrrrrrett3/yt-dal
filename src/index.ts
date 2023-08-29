@@ -18,6 +18,22 @@ app.get("/", (req, res) => {
   res.sendFile(path.resolve("static/index.html"));
 });
 
+app.get("/redirect", (req, res) => {
+    const { input, ext, i } = req.query;
+    if (!input) {
+        res.redirect("/");
+        return;
+    }
+
+    const id = ytdl.getVideoID(input as string);
+    if (!id) {
+        res.redirect("/");
+        return;
+    }
+
+    res.redirect(`/${id}.${ext}` + (i == "true" ? "?i=true" : ""));
+})
+
 app.get("/:type/:id.:ext", (req, res) => {
   const { type, id, ext } = req.params;
   res.redirect(`/${id}.${ext}`);
@@ -25,6 +41,7 @@ app.get("/:type/:id.:ext", (req, res) => {
 
 app.get("/:id.:ext", async (req, res) => {
   const { id, ext } = req.params;
+  const { i } = req.query;
 
   if (!ytdl.validateID(id)) {
     return res.status(400).json({
@@ -54,6 +71,8 @@ app.get("/:id.:ext", async (req, res) => {
 
     if (!video) return;
 
+    const title = video.videoDetails.title.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+
     try {
       const formats = video.formats
         .sort((a, b) => {
@@ -70,6 +89,11 @@ app.get("/:id.:ext", async (req, res) => {
       });
 
       res.setHeader("Content-Type", "video/" + ext);
+
+        if (i == "true") {
+            res.setHeader("Content-Disposition", `attachment; filename="${title}.${ext}"`);
+        }
+
       stream.pipe(res, { end: true });
     } catch (err) {
       return res.status(500).json({
@@ -84,6 +108,17 @@ app.get("/:id.:ext", async (req, res) => {
       });
     }
 
+    const video = await ytdl.getBasicInfo(id).catch((err) => {
+        res.status(400).json({
+            error: "Invalid video ID",
+        });
+        return;
+    });
+
+    if (!video) return;
+
+    const title = video.videoDetails.title.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+
     try {
       const stream = ytdl(id, {
         quality: "highestaudio",
@@ -92,6 +127,8 @@ app.get("/:id.:ext", async (req, res) => {
 
       process(stream, ext, res, {
         audioBitrate: 192,
+        download: i == "true",
+        fileName: title,
       });
     } catch (err) {
       return res.status(500).json({
@@ -108,6 +145,8 @@ async function process(
   options?: {
     audioBitrate?: number;
     videoBitrate?: number;
+    download?: boolean;
+    fileName?: string;
   }
 ) {
   const ffmpeg = Ffmpeg({ source: stream });
@@ -126,7 +165,9 @@ async function process(
   });
 
   res.setHeader("Content-Type", "audio/" + ext);
-
+    if (options?.download) {
+        res.setHeader("Content-Disposition", `attachment; filename="${options.fileName || res.req.path}.${ext}"`);
+    }
   ffmpeg.pipe(res, { end: true });
 }
 
