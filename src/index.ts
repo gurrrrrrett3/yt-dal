@@ -45,24 +45,37 @@ app.get("/:id.:ext", async (req, res) => {
       });
     }
 
-    const video = await ytdl.getBasicInfo(id);
-
-    const formats = video.formats
-      .sort((a, b) => {
-        return (b.bitrate || 0) - (a.bitrate || 0);
-      })
-      .filter((format) => {
-        return format.hasVideo && format.hasAudio && format.container === ext;
+    const video = await ytdl.getBasicInfo(id).catch((err) => {
+      res.status(400).json({
+        error: "Invalid video ID",
       });
-
-    const stream = ytdl(id, {
-      quality: "highestvideo",
-      filter: "videoandaudio",
-      format: formats[0] || undefined,
+      return;
     });
 
-    res.setHeader("Content-Type", "video/" + ext);
-    stream.pipe(res, { end: true });
+    if (!video) return;
+
+    try {
+      const formats = video.formats
+        .sort((a, b) => {
+          return (b.bitrate || 0) - (a.bitrate || 0);
+        })
+        .filter((format) => {
+          return format.hasVideo && format.hasAudio && format.container === ext;
+        });
+
+      const stream = ytdl(id, {
+        quality: "highestvideo",
+        filter: "videoandaudio",
+        format: formats[0] || undefined,
+      });
+
+      res.setHeader("Content-Type", "video/" + ext);
+      stream.pipe(res, { end: true });
+    } catch (err) {
+      return res.status(500).json({
+        error: "Internal server error",
+      });
+    }
   } else {
     const validExt = ["mp3", "wav", "ogg", "flac"];
     if (!validExt.includes(ext)) {
@@ -71,14 +84,20 @@ app.get("/:id.:ext", async (req, res) => {
       });
     }
 
-    const stream = ytdl(id, {
-      quality: "highestaudio",
-      filter: "audioonly",
-    });
+    try {
+      const stream = ytdl(id, {
+        quality: "highestaudio",
+        filter: "audioonly",
+      });
 
-    process(stream, ext, res, {
-      audioBitrate: 192,
-    });
+      process(stream, ext, res, {
+        audioBitrate: 192,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        error: "Internal server error",
+      });
+    }
   }
 });
 
@@ -99,6 +118,7 @@ async function process(
 
   ffmpeg.on("error", (err) => {
     console.log(err);
+    throw new Error("An error occurred while processing the video");
   });
 
   ffmpeg.on("end", () => {
