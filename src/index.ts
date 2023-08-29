@@ -107,7 +107,7 @@ app.get("/:id.:ext", async (req, res) => {
 
       if (useDiscordPatch) {
         // discord's player is broken and doesn't support streams, so we have to download full file before sending it
-        const tempPath = path.resolve(`temp/${title}.${ext}`);
+        const tempPath = path.resolve(`temp/${id}.${ext}`);
         if (!fs.existsSync(tempPath)) {
           stream.pipe(fs.createWriteStream(tempPath));
         } else {
