@@ -33,11 +33,12 @@ app.get("/redirect", (req, res) => {
     const id = ytdl.getVideoID(input as string);
     if (!id) {
       res.redirect("/");
-      return;
+      return console.log(`Invalid video: ${input}`);
     }
 
     res.redirect(`/${id}.${ext}` + (i == "true" ? "?i=true" : ""));
   } catch (err) {
+    console.log(err);
     res.redirect("/");
     return;
   }
@@ -53,6 +54,12 @@ app.get("/:id.:ext", async (req, res) => {
   const { i } = req.query;
 
   const useDiscordPatch = req.headers["user-agent"]?.includes("Discordbot") || false;
+
+  console.log(
+    `[${new Date().toLocaleString()}] ${
+      req.headers["x-forwarded-for"] || req.connection.remoteAddress
+    } - ${id}.${ext} - ${req.headers["user-agent"]}`
+  );
 
   if (!ytdl.validateID(id)) {
     return res.status(400).json({
@@ -99,6 +106,8 @@ app.get("/:id.:ext", async (req, res) => {
         format: formats[0] || undefined,
       });
 
+      console.log(`[${id}.${ext}] stream started | ${formats[0].bitrate}Kbps`);
+
       res.setHeader("Content-Type", "video/" + ext);
 
       if (i == "true") {
@@ -109,22 +118,31 @@ app.get("/:id.:ext", async (req, res) => {
         // discord's player is broken and doesn't support streams, so we have to download full file before sending it
         const tempPath = path.resolve(`temp/${id}.${ext}`);
         if (!fs.existsSync(tempPath)) {
+          console.log(`[${id}.${ext}] discord | downloading`);
           stream.pipe(fs.createWriteStream(tempPath));
         } else {
+          console.log(`[${id}.${ext}] discord | already exists}`);
           stream.emit("end");
           stream.destroy();
         }
 
         stream.on("end", () => {
+          console.log(`[${id}.${ext}] discord | sending`);
           res.sendFile(tempPath);
 
           setTimeout(() => {
             if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+            console.log(`[${id}.${ext}] discord | deleted`);
           }, 1000 * 60 * 5);
         });
-      }
+      } else {
+        stream.pipe(res, { end: true });
+        console.log(`[${id}.${ext}] normal | streaming`);
 
-      stream.pipe(res, { end: true });
+        res.on("close", () => {
+          console.log(`[${id}.${ext}] normal | closed`);
+        });
+      }
     } catch (err) {
       return res.status(500).json({
         error: "Internal server error",
