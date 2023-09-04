@@ -43,7 +43,7 @@ router.get("/:id.:ext", async (req, res) => {
     try {
       const stream = ytdl(id, {
         quality: "highest",
-        filter: ext == "fastest" ? "videoandaudio" : (format) => format.container === ext,
+        filter: "videoandaudio",
       });
 
       const info = await getVideoInfo(stream);
