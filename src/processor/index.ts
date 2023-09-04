@@ -125,7 +125,7 @@ export default class Processor {
 
   public pipeToFile() {
     return new Promise<string>((resolve, reject) => {
-      const tempPath = path.resolve(`temp/${name}`);
+      const tempPath = path.resolve(`temp/${this.name}`);
       if (!fs.existsSync(tempPath)) {
         this.stream.pipe(fs.createWriteStream(tempPath));
       } else {
