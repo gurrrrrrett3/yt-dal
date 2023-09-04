@@ -27,8 +27,6 @@ app.use("/", mainRouter)
 app.use("/yt", youtubeRouter)
 app.use("/tw", twitterRouter)
 
-
-
 app.listen(parseInt(port), () => {
   console.log("Server is running on port " + port);
 });
