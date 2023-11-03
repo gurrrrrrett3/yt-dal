@@ -3,7 +3,7 @@ import ffmpegPath from "ffmpeg-static";
 import path from "path";
 import fs from "fs";
 
-import mainRouter from "./routers/mainRouter";
+import mainRouter from "./routers/indexRouter";
 import youtubeRouter from "./routers/youtubeRouter";
 import twitterRouter from "./routers/twitterRouter";
 
@@ -20,12 +20,14 @@ if (!fs.existsSync("temp")) {
 }
 
 app.get("/", (req, res) => {
-  res.sendFile(path.resolve("static/index.html"));
+  res.sendFile(path.resolve("dist/build/index.html"));
 });
 
 app.use("/", mainRouter)
 app.use("/yt", youtubeRouter)
 app.use("/tw", twitterRouter)
+
+app.use("/", express.static("dist/build"));
 
 app.listen(parseInt(port), () => {
   console.log("Server is running on port " + port);
