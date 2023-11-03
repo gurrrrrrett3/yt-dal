@@ -4,8 +4,6 @@ import path from "path";
 import fs from "fs";
 
 import mainRouter from "./routers/indexRouter";
-import youtubeRouter from "./routers/youtubeRouter";
-import twitterRouter from "./routers/twitterRouter";
 
 const port = fs.readFileSync("port.txt", "utf-8") || "3000";
 
@@ -24,9 +22,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/", mainRouter)
-app.use("/yt", youtubeRouter)
-app.use("/tw", twitterRouter)
-
 app.use("/", express.static("dist/build"));
 
 app.listen(parseInt(port), () => {
