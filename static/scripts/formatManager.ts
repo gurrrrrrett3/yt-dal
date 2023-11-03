@@ -28,7 +28,7 @@ export default class FormatManager {
         const parsedFormats: ParsedFormat[] = [];
 
         const audioFormats = [
-            // "mp3",
+            "mp3",
             "ogg",
            // "wav",
             "flac",
