@@ -1,0 +1,42 @@
+import express from "express";
+export default function errorRedirect(res: express.Response, message: string) {
+  res.redirect(
+    `/error?m=${message
+      .replace(/ /g, "%20")
+      .replace(/\n/g, "%0A")
+      .replace(/\r/g, "%0D")
+      .replace(/\t/g, "%09")
+      .replace(/\f/g, "%0C")
+      .replace(/\v/g, "%0B")
+      .replace(/"/g, "%22")
+      .replace(/#/g, "%23")
+      .replace(/%/g, "%25")
+      .replace(/&/g, "%26")
+      .replace(/'/g, "%27")
+      .replace(/\(/g, "%28")
+      .replace(/\)/g, "%29")
+      .replace(/\*/g, "%2A")
+      .replace(/\+/g, "%2B")
+      .replace(/,/g, "%2C")
+      .replace(/-/g, "%2D")
+      .replace(/\./g, "%2E")
+      .replace(/\//g, "%2F")
+      .replace(/:/g, "%3A")
+      .replace(/;/g, "%3B")
+      .replace(/</g, "%3C")
+      .replace(/=/g, "%3D")
+      .replace(/>/g, "%3E")
+      .replace(/\?/g, "%3F")
+      .replace(/@/g, "%40")
+      .replace(/\[/g, "%5B")
+      .replace(/\\/g, "%5C")
+      .replace(/\]/g, "%5D")
+      .replace(/\^/g, "%5E")
+      .replace(/_/g, "%5F")
+      .replace(/`/g, "%60")
+      .replace(/{/g, "%7B")
+      .replace(/\|/g, "%7C")
+      .replace(/}/g, "%7D")
+      .replace(/~/g, "%7E")}`
+  );
+}

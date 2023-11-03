@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="darkreader-lock" />
+    <title>yt-dal | Direct Audio Link</title>
+  </head>
+  <body>
+    <h1 data-typewriter="0">yt-dal</h1>
+    <p data-typewriter="1">Direct Audio Link</p>
+
+    <form>
+      <input type="text" name="id" id="id" placeholder="Enter video ID or URL" required />
+
+      <div class="btngroup">
+        <button id="mp3">MP3</button>
+        <button id="ogg">OGG</button>
+        <button id="wav">WAV</button>
+        <button id="flac">FLAC</button>
+        <button id="mp4">MP4</button>
+        <button id="webm">WEBM</button>
+      </div>
+      <div class="btngroup">
+        <button id="fastest" class="tooltip">
+          Fastest Video
+          <span class="tooltiptext">Get the video that will download the fastest</span>
+        </button>
+        <button id="fastestaudio" class="tooltip">
+          Fastest Audio
+          <span class="tooltiptext">Get the audio that will download the fastest</span>
+        </button>
+      </div>
+
+      <div class="btngroup">
+        <input type="checkbox" name="instantdl" id="instantdl" />
+        <label for="instantdl" class="tooltip"
+          >Instant Download
+          <span class="tooltiptext">Download instantly instead of redirecting to a video</span>
+        </label>
+      </div>
+    </form>
+
+    <div class="changelog">
+      <h2>1.0.2 (9/3/2023)</h2>
+      <ul>
+        <li>Complete rewrite to the backend to make it easier to add features</li>
+        <li>Added Twitter (or "X" if you actually call it that) support</li>
+        <li>Added "fastest video" and "fastest audio" settings</li>
+        <li>Added tooltips</li>
+        <li>Added changelog</li>
+      </ul>
+      <h2>1.0.1 (8/31/2023)</h2>
+      <ul>
+        <li>Added "instant download" setting</li>
+        <li>Fixed issue with discord links not embedding correctly</li>
+      </ul>
+
+      <h2>1.0.0 (8/29/2023)</h2>
+      <ul>
+        <li>Initial Release</li>
+      </ul>
+    </div>
+
+    <div class="links">
+      <a href="https://github.com/gurrrrrrett3/yt-dal">Source</a>
+      <a href="https://gart.sh">gart.sh</a>
+    </div>
+
+  </body>
+
+  <script>
+    let currentCharCount = 0;
+    let delay = 75;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const typewriter = (element, startDelay) => {
+        const textArray = element.innerHTML.split("");
+        element.innerHTML = "";
+
+        setTimeout(() => {
+          textArray.forEach((letter, i) => {
+            setTimeout(() => (element.innerHTML += letter), delay * i);
+          });
+        }, startDelay);
+      };
+
+      document.querySelectorAll("[data-typewriter]").forEach((element) => {
+        const elementIndex = element.getAttribute("data-typewriter");
+        const length = element.innerHTML.length;
+        typewriter(element, delay * currentCharCount);
+        currentCharCount += length;
+      });
+
+      document.querySelector("form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const element = e.srcElement;
+        const ext = e.submitter.id;
+        const id = element.querySelector("#id").value;
+        const instantdl = element.querySelector("#instantdl").checked;
+        window.location.href = `/redirect?input=${id}&ext=${ext}&i=${instantdl}`;
+      });
+    });
+
+    function urlEncode(str) {
+      return encodeURIComponent(str).replace(/[!'()*]/g, (c) => {
+        return "%" + c.charCodeAt(0).toString(16);
+      });
+    }
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    body {
+      background-color: black;
+      color: white;
+      font-size: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: none;
+      border-radius: 0.5rem;
+      outline: none;
+      font-size: 1.2rem;
+      background-color: black;
+      color: white;
+    }
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    button {
+      padding: 0.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      outline: none;
+      font-size: 1.2rem;
+      background-color: black;
+      color: white;
+    }
+
+    button:hover {
+      cursor: pointer;
+      background-color: white;
+      color: black;
+    }
+
+    button:active {
+      background-color: black;
+      color: white;
+    }
+
+    button:focus {
+      outline: none;
+    }
+
+    .btngroup {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+
+    label {
+      margin-right: 0.5rem;
+      font-size: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    input[type="checkbox"] {
+      width: 1rem;
+      height: 1rem;
+      color: white;
+      background-color: black;
+      margin-right: 0.5rem;
+      border: 3px solid white;
+      border-radius: 0;
+
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+
+    input[type="checkbox"]:checked {
+      background-color: white;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 120px;
+      background-color: black;
+      color: white;
+      text-align: center;
+      padding: 5px 0;
+      border-radius: 0.5rem;
+
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -60px;
+
+      opacity: 0;
+      transition: opacity 0.3s;
+
+      outline: white solid 2px;
+    }
+
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: white transparent transparent transparent;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .changelog {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      padding: 2rem;
+      font-size: 0.8rem;
+    }
+    
+    .changelog ul {
+      list-style-type: none;
+    }
+
+    .changelog h2 {
+      margin-bottom: 0.2rem;
+      margin-top: 0.5rem;
+
+    } 
+    
+    .links {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      padding: 2rem;
+      font-size: 0.8rem;
+    }
+
+    .links a {
+      color: white;
+      text-decoration: none;
+      margin-right: 1rem;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .changelog {
+        display: none;
+      }
+    }
+  </style>
+</html>
